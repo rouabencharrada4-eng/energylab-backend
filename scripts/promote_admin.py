@@ -1,8 +1,21 @@
 # scripts/promote_admin.py
 # Run once: python -m scripts.promote_admin someone@example.com
 import sys
+import httpx
 from app.db.database import SessionLocal
 from app.db.models import User, RoleEnum
+from app.core.config import settings
+
+def sync_clerk_role(clerk_id: str):
+    resp = httpx.patch(
+        f"https://api.clerk.com/v1/users/{clerk_id}/metadata",
+        headers={
+            "Authorization": f"Bearer {settings.CLERK_SECRET_KEY}",
+            "Content-Type": "application/json",
+        },
+        json={"public_metadata": {"role": "admin"}},
+    )
+    resp.raise_for_status()
 
 def run(email: str):
     db = SessionLocal()
@@ -14,7 +27,12 @@ def run(email: str):
             return
         user.role = RoleEnum.admin
         db.commit()
-        print(f"{email} is now an admin.")
+        print(f"{email} is now an admin in the database.")
+        try:
+            sync_clerk_role(user.clerk_id)
+            print(f"Clerk publicMetadata updated for {user.clerk_id}.")
+        except httpx.HTTPStatusError as e:
+            print(f"WARNING: DB updated but Clerk sync failed: {e.response.status_code} {e.response.text}")
     finally:
         db.close()
 
