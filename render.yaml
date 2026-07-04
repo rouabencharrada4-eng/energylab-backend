@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: energylab-backend
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: energylab-db
+          property: connectionString
+      - key: CLERK_SECRET_KEY
+        sync: false
+      - key: CLERK_WEBHOOK_SECRET
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+
+databases:
+  - name: energylab-db
+    databaseName: energylab
+    user: energylab
