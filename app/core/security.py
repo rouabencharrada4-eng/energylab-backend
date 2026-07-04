@@ -1,5 +1,5 @@
+import logging
 import jwt
-import httpx
 from jwt import PyJWKClient
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
@@ -7,9 +7,10 @@ from app.db.database import get_db
 from app.crud import user as user_crud
 from sqlalchemy.orm import Session
 
+log = logging.getLogger("auth")
+
 bearer_scheme = HTTPBearer()
 
-# Cache the JWKS client per issuer to avoid refetching on every request
 _jwks_clients: dict[str, PyJWKClient] = {}
 
 def _get_jwks_client(issuer: str) -> PyJWKClient:
@@ -17,16 +18,24 @@ def _get_jwks_client(issuer: str) -> PyJWKClient:
         _jwks_clients[issuer] = PyJWKClient(f"{issuer}/.well-known/jwks.json")
     return _jwks_clients[issuer]
 
+# app/core/security.py
+import logging
+
+logger = logging.getLogger(__name__)
+
+# app/core/security.py
 async def get_clerk_user_id(
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> str:
     token = credentials.credentials
     try:
-        # Decode header only to get issuer for JWKS lookup
         unverified = jwt.decode(token, options={"verify_signature": False})
         issuer = unverified.get("iss")
         if not issuer:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token: missing issuer")
+            raise HTTPException(status_code=401, detail="Missing issuer")
+
+        print(f"[AUTH] issuer={issuer}")
+        print(f"[AUTH] token_preview={token[:40]}...")
 
         jwks_client = _get_jwks_client(issuer)
         signing_key = jwks_client.get_signing_key_from_jwt(token)
@@ -36,13 +45,20 @@ async def get_clerk_user_id(
             signing_key.key,
             algorithms=["RS256"],
             options={"verify_exp": True},
+            leeway=30,          # ← 30-second tolerance for clock skew
         )
+        print(f"[AUTH] OK sub={payload['sub']}")
         return payload["sub"]
 
     except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token expired")
-    except Exception:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
+        print("[AUTH] FAIL: token expired")
+        raise HTTPException(status_code=401, detail="Token expired")
+    except jwt.InvalidTokenError as e:
+        print(f"[AUTH] FAIL InvalidTokenError: {e}")
+        raise HTTPException(status_code=401, detail="Invalid token")
+    except Exception as e:
+        print(f"[AUTH] FAIL {type(e).__name__}: {e}")
+        raise HTTPException(status_code=401, detail="Authentication failed")
 
 async def get_current_user(
     clerk_id: str = Depends(get_clerk_user_id),
