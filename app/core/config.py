@@ -5,6 +5,7 @@ class Settings(BaseSettings):
     CLERK_SECRET_KEY: str
     CLERK_WEBHOOK_SECRET: str
     FRONTEND_URL: str = "http://localhost:5173"
+    BACKEND_URL: str = "http://localhost:8000"
 
     class Config:
         env_file = ".env"

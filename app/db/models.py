@@ -64,6 +64,7 @@ class Service(Base):
     requires_coach   = Column(Boolean, default=True)
     is_active        = Column(Boolean, default=True)
     created_at       = Column(DateTime, server_default=func.now())
+    image_url = Column(String, nullable=True)
 
     coaches    = relationship("CoachService", back_populates="service", cascade="all, delete-orphan")
     time_slots = relationship("TimeSlot", back_populates="service")

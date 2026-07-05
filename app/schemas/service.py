@@ -9,6 +9,7 @@ class ServiceBase(BaseModel):
     max_capacity:     int           = 1
     requires_coach:   bool          = True
     is_active:        bool          = True
+    image_url:        Optional[str] = None
 
 class ServiceCreate(ServiceBase):
     pass
@@ -20,6 +21,7 @@ class ServiceUpdate(BaseModel):
     max_capacity:     Optional[int]  = None
     requires_coach:   Optional[bool] = None
     is_active:        Optional[bool] = None
+    image_url:        Optional[str] = None
 
 class ServiceOut(ServiceBase):
     id:         str

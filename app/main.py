@@ -1,8 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from app.core.config import settings
 from app.db.database import Base, engine
 from app.api.routes import webhooks, users, coaches, services, time_slots, bookings, announcements
+import os
 
 Base.metadata.create_all(bind=engine)
 
@@ -15,6 +17,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+os.makedirs("uploads/services", exist_ok=True)
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 app.include_router(webhooks.router,      prefix="")
 app.include_router(users.router,         prefix="")
