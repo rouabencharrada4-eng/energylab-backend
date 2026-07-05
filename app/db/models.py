@@ -105,6 +105,7 @@ class Booking(Base):
     customer_id    = Column(UUID(as_uuid=False), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     time_slot_id   = Column(UUID(as_uuid=False), ForeignKey("time_slots.id"), nullable=False)
     status         = Column(Enum(BookingStatusEnum), default=BookingStatusEnum.pending, nullable=False)
+    customer_phone = Column(String, nullable=True)
     customer_notes = Column(Text, nullable=True)
     admin_notes    = Column(Text, nullable=True)
     created_at     = Column(DateTime, server_default=func.now())

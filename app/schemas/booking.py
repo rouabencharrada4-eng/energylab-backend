@@ -13,6 +13,7 @@ class BookingStatusEnum(str, Enum):
 
 class BookingCreate(BaseModel):
     time_slot_id:   str
+    customer_phone: str
     customer_notes: Optional[str] = None
 
 class BookingStatusUpdate(BaseModel):
@@ -24,6 +25,7 @@ class BookingOut(BaseModel):
     customer_id:    str
     time_slot_id:   str
     status:         BookingStatusEnum
+    customer_phone: Optional[str]    = None
     customer_notes: Optional[str]    = None
     admin_notes:    Optional[str]    = None
     created_at:     datetime
