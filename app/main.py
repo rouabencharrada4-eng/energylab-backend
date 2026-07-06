@@ -15,12 +15,14 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="EnergyLab API", version="1.0.0")
 
+ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    settings.FRONTEND_URL,
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        settings.FRONTEND_URL,
-    ],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -30,7 +32,7 @@ app.add_middleware(
 async def debug_exception_handler(request: Request, exc: Exception):
     tb = traceback.format_exc()
     log.error(f"Unhandled error on {request.method} {request.url.path}:\n{tb}")
-    return JSONResponse(
+    response = JSONResponse(
         status_code=500,
         content={
             "detail": "Internal Server Error",
@@ -38,6 +40,15 @@ async def debug_exception_handler(request: Request, exc: Exception):
             "traceback": tb.splitlines(),  # TEMPORARY — remove before real production use
         },
     )
+    # A registered handler for the bare Exception class runs in Starlette's
+    # ServerErrorMiddleware, which sits OUTSIDE CORSMiddleware — so without this,
+    # every unhandled 500 arrives at the browser with no CORS header and gets
+    # reported as a CORS error instead of showing the real failure.
+    origin = request.headers.get("origin")
+    if origin in ALLOWED_ORIGINS:
+        response.headers["Access-Control-Allow-Origin"] = origin
+        response.headers["Access-Control-Allow-Credentials"] = "true"
+    return response
 
 os.makedirs("uploads/services", exist_ok=True)
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
