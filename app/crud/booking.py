@@ -38,6 +38,7 @@ def create(db: Session, data: BookingCreate, customer_id: str):
     booking = Booking(
         customer_id=customer_id,
         time_slot_id=data.time_slot_id,
+        customer_phone=data.customer_phone,
         customer_notes=data.customer_notes,
     )
     db.add(booking)
