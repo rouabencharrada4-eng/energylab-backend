@@ -1,10 +1,14 @@
+# app/main.py
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
 from app.core.config import settings
 from app.db.database import Base, engine
-from app.api.routes import webhooks, users, coaches, services, time_slots, bookings, announcements
+from app.api.routes import (
+    webhooks, users, coaches, services, time_slots, bookings, announcements,
+    site_content, gallery, showcase,
+)
 import os
 import traceback
 import logging
@@ -50,7 +54,8 @@ async def debug_exception_handler(request: Request, exc: Exception):
         response.headers["Access-Control-Allow-Credentials"] = "true"
     return response
 
-os.makedirs("uploads/services", exist_ok=True)
+for _dir in ("services", "gallery", "showcase", "site-content"):
+    os.makedirs(f"uploads/{_dir}", exist_ok=True)
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 app.include_router(webhooks.router,      prefix="")
@@ -60,6 +65,9 @@ app.include_router(services.router,      prefix="")
 app.include_router(time_slots.router,    prefix="")
 app.include_router(bookings.router,      prefix="")
 app.include_router(announcements.router, prefix="")
+app.include_router(site_content.router,  prefix="")
+app.include_router(gallery.router,       prefix="")
+app.include_router(showcase.router,      prefix="")
 
 @app.get("/health")
 def health():

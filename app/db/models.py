@@ -1,3 +1,4 @@
+# app/db/models.py
 import uuid
 from sqlalchemy import (
     Column, String, Boolean, Integer, Text, Date, Time,
@@ -125,3 +126,43 @@ class Announcement(Base):
     ends_at    = Column(DateTime, nullable=True)
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+
+
+class SiteContent(Base):
+    """
+    Free-form key/value store for editable site copy & images
+    (hero title, about paragraphs, contact info, logo, etc).
+    Lets the admin edit site text/images without a code deploy,
+    and lets us add new editable fields later without a migration.
+    """
+    __tablename__ = "site_content"
+
+    key        = Column(String, primary_key=True)
+    value      = Column(Text, nullable=True)
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+
+
+class GalleryImage(Base):
+    __tablename__ = "gallery_images"
+
+    id         = Column(UUID(as_uuid=False), primary_key=True, default=gen_uuid)
+    image_url  = Column(String, nullable=False)
+    caption    = Column(String, nullable=True)
+    sort_order = Column(Integer, default=0, nullable=False)
+    is_active  = Column(Boolean, default=True)
+    created_at = Column(DateTime, server_default=func.now())
+
+
+class ShowcaseItem(Base):
+    """The 'What We Offer' cards on the homepage — editable from the admin dashboard."""
+    __tablename__ = "showcase_items"
+
+    id          = Column(UUID(as_uuid=False), primary_key=True, default=gen_uuid)
+    name        = Column(String, nullable=False)
+    description = Column(Text, nullable=True)
+    image_url   = Column(String, nullable=True)
+    align       = Column(String, default="left")   # "left" | "right"
+    bookable    = Column(Boolean, default=False)    # show a "Book Now" button
+    sort_order  = Column(Integer, default=0, nullable=False)
+    is_active   = Column(Boolean, default=True)
+    created_at  = Column(DateTime, server_default=func.now())

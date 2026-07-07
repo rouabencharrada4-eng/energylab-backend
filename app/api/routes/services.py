@@ -1,16 +1,13 @@
+# app/api/routes/services.py
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from sqlalchemy.orm import Session
-from pathlib import Path
-import shutil, uuid
 from app.db.database import get_db
 from app.schemas.service import ServiceCreate, ServiceUpdate, ServiceOut
 from app.crud import service as service_crud
 from app.core.security import get_admin_user
-from app.core.config import settings
+from app.core.uploads import upload_image
 
 router = APIRouter(prefix="/services", tags=["services"])
-
-UPLOAD_DIR = Path("uploads/services")
 
 @router.get("", response_model=list[ServiceOut])
 def get_services(db: Session=Depends(get_db)):
@@ -46,18 +43,7 @@ def upload_service_image(
     if not service:
         raise HTTPException(status_code=404, detail="Service not found")
 
-    if file.content_type not in ("image/jpeg", "image/png", "image/webp"):
-        raise HTTPException(status_code=400, detail="File must be an image (jpeg, png, or webp)")
-
-    ext = file.filename.split(".")[-1]
-    filename = f"{service_id}_{uuid.uuid4().hex[:8]}.{ext}"
-    filepath = UPLOAD_DIR / filename
-
-    UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
-    with open(filepath, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
-
-    service.image_url = f"{settings.BACKEND_URL}/uploads/services/{filename}"
+    service.image_url = upload_image(file, folder="services")
     db.commit()
     db.refresh(service)
     return service
