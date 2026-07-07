@@ -42,3 +42,4 @@ wrapt==2.2.2
 cryptography==41.0.4
 cloudinary==1.41.0
 python-multipart==0.0.20
+python-multipart
