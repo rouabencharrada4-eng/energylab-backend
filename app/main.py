@@ -21,8 +21,13 @@ app = FastAPI(title="EnergyLab API", version="1.0.0")
 
 ALLOWED_ORIGINS = [
     "http://localhost:5173",
-    settings.FRONTEND_URL,
+    "http://localhost:3000",
 ]
+# FRONTEND_URL can be a single URL or comma-separated list
+for url in settings.FRONTEND_URL.split(","):
+    url = url.strip()
+    if url and url not in ALLOWED_ORIGINS:
+        ALLOWED_ORIGINS.append(url)
 
 app.add_middleware(
     CORSMiddleware,
