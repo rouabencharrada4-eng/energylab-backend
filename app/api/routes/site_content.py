@@ -5,7 +5,7 @@ from app.db.database import get_db
 from app.schemas.site_content import SiteContentBulkUpdate, SiteContentOut
 from app.crud import site_content as content_crud
 from app.core.security import get_admin_user
-from app.core.uploads import upload_image
+from app.core.uploads import upload_image, delete_image
 
 router = APIRouter(prefix="/site-content", tags=["site-content"])
 
@@ -36,3 +36,21 @@ def upload_content_image(
     url = upload_image(file, folder="site-content")
     content_crud.bulk_upsert(db, {key: url})
     return {"key": key, "url": url}
+
+
+@router.delete("/{key}")
+def reset_content_value(
+    key: str,
+    db: Session = Depends(get_db),
+    _=Depends(get_admin_user),
+):
+    """
+    Admin — clear a single key entirely (e.g. reset an image back to the
+    frontend's built-in default). Best-effort deletes the underlying file
+    too if it was a local/Cloudinary upload.
+    """
+    current = content_crud.get_all(db).get(key)
+    content_crud.delete_key(db, key)
+    if current:
+        delete_image(current)
+    return {"key": key, "deleted": True}
