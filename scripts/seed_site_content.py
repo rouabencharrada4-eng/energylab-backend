@@ -17,11 +17,12 @@ SITE_CONTENT = {
     "logo_url": "/assets/logo-mark.png",
 
     "about_heading": "About Us",
-    "about_paragraph_1": "Welcome to Energy Lab—a space where movement, wellness, and mindfulness come together.",
-    "about_paragraph_2": "We believe true strength is built through intention, not intensity. Every Pilates session is thoughtfully designed around controlled movement and mindful breathing, helping you strengthen your body, improve mobility, and cultivate lasting balance.",
-    "about_paragraph_3": "From private coaching and group classes to InBody assessments, every experience is tailored to support your individual journey. Our studio offers a peaceful, modern environment where you can disconnect from the pace of everyday life and reconnect with yourself.",
-    "about_paragraph_4": "At Energy Lab, wellness isn't just a workout—it's a way of living.",
-    "about_image_url": "/assets/about_us.png",
+    "about_text": "\n\n".join([
+        "Welcome to Energy Lab—a space where movement, wellness, and mindfulness come together.",
+        "We believe true strength is built through intention, not intensity. Every Pilates session is thoughtfully designed around controlled movement and mindful breathing, helping you strengthen your body, improve mobility, and cultivate lasting balance.",
+        "From private coaching and group classes to InBody assessments, every experience is tailored to support your individual journey. Our studio offers a peaceful, modern environment where you can disconnect from the pace of everyday life and reconnect with yourself.",
+        "At Energy Lab, wellness isn't just a workout—it's a way of living.",
+    ]),
 
     "space_heading": "Our Space",
     "space_subheading": "A quiet, modern studio designed for focus — here's a glimpse before you visit.",
