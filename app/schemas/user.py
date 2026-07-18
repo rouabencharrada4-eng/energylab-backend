@@ -11,6 +11,7 @@ class UserBase(BaseModel):
     email:     EmailStr
     full_name: str
     phone:     Optional[str] = None
+    address:   Optional[str] = None
 
 class UserCreate(UserBase):
     clerk_id: str
@@ -19,6 +20,7 @@ class UserCreate(UserBase):
 class UserUpdate(BaseModel):
     full_name: Optional[str] = None
     phone:     Optional[str] = None
+    address:   Optional[str] = None
 
 class UserOut(UserBase):
     id:         str

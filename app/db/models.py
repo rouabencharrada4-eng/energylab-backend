@@ -34,6 +34,7 @@ class User(Base):
     email      = Column(String, unique=True, nullable=False)
     full_name  = Column(String, nullable=False)
     phone      = Column(String, nullable=True)
+    address    = Column(String, nullable=True)
     role       = Column(Enum(RoleEnum), default=RoleEnum.customer, nullable=False)
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
