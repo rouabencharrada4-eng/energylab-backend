@@ -7,7 +7,7 @@ from app.core.config import settings
 from app.db.database import Base, engine
 from app.api.routes import (
     webhooks, users, coaches, services, time_slots, bookings, announcements,
-    site_content, gallery, showcase,
+    site_content, gallery, showcase, events,
 )
 import os
 import traceback
@@ -59,7 +59,7 @@ async def debug_exception_handler(request: Request, exc: Exception):
         response.headers["Access-Control-Allow-Credentials"] = "true"
     return response
 
-for _dir in ("services", "gallery", "showcase", "site-content"):
+for _dir in ("services", "gallery", "showcase", "site-content", "events"):
     os.makedirs(f"uploads/{_dir}", exist_ok=True)
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
@@ -73,6 +73,7 @@ app.include_router(announcements.router, prefix="")
 app.include_router(site_content.router,  prefix="")
 app.include_router(gallery.router,       prefix="")
 app.include_router(showcase.router,      prefix="")
+app.include_router(events.router,        prefix="")
 
 @app.get("/health")
 def health():

@@ -167,3 +167,18 @@ class ShowcaseItem(Base):
     sort_order  = Column(Integer, default=0, nullable=False)
     is_active   = Column(Boolean, default=True)
     created_at  = Column(DateTime, server_default=func.now())
+
+
+class Event(Base):
+    """A single spotlight event shown on the homepage, just before About Us.
+    Admin can prep several in advance; only the soonest active one is shown."""
+    __tablename__ = "events"
+
+    id          = Column(UUID(as_uuid=False), primary_key=True, default=gen_uuid)
+    title       = Column(String, nullable=False)
+    description = Column(Text, nullable=True)
+    image_url   = Column(String, nullable=True)
+    event_date  = Column(DateTime, nullable=True)
+    is_active   = Column(Boolean, default=True)
+    created_at  = Column(DateTime, server_default=func.now())
+    updated_at  = Column(DateTime, server_default=func.now(), onupdate=func.now())
