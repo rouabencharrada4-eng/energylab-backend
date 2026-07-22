@@ -1,4 +1,4 @@
-# app/db/models.py
+
 import uuid
 from sqlalchemy import (
     Column, String, Boolean, Integer, Text, Date, Time,
@@ -182,3 +182,15 @@ class Event(Base):
     is_active   = Column(Boolean, default=True)
     created_at  = Column(DateTime, server_default=func.now())
     updated_at  = Column(DateTime, server_default=func.now(), onupdate=func.now())
+
+
+class HeroImage(Base):
+    """Homepage hero background slideshow. Admin uploads one or more; the
+    public homepage cross-fades through the active ones automatically."""
+    __tablename__ = "hero_images"
+
+    id         = Column(UUID(as_uuid=False), primary_key=True, default=gen_uuid)
+    image_url  = Column(String, nullable=False)
+    sort_order = Column(Integer, default=0, nullable=False)
+    is_active  = Column(Boolean, default=True)
+    created_at = Column(DateTime, server_default=func.now())
