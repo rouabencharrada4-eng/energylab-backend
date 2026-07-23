@@ -50,6 +50,10 @@ async def clerk_webhook(
                     full_name=full_name,
                     phone=phone,
                     address=address,
+                    age=metadata.get("age") or None,
+                    weight_kg=metadata.get("weight_kg") or None,
+                    height_cm=metadata.get("height_cm") or None,
+                    fitness_goal=metadata.get("fitness_goal") or None,
                 ))
         finally:
             db.close()

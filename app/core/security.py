@@ -105,6 +105,10 @@ async def _fetch_and_create_user_from_clerk(db: Session, clerk_id: str):
             full_name=full_name,
             phone=metadata.get("phone") or None,
             address=metadata.get("address") or None,
+            age=metadata.get("age") or None,
+            weight_kg=metadata.get("weight_kg") or None,
+            height_cm=metadata.get("height_cm") or None,
+            fitness_goal=metadata.get("fitness_goal") or None,
         ))
     except IntegrityError:
         # Lost a race with the webhook (or another concurrent request) —

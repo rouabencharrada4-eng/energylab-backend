@@ -16,6 +16,10 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     clerk_id: str
     role:     RoleEnum = RoleEnum.customer
+    age:          Optional[int] = None
+    weight_kg:    Optional[float] = None
+    height_cm:    Optional[float] = None
+    fitness_goal: Optional[str] = None
 
 class UserUpdate(BaseModel):
     full_name:    Optional[str] = None
