@@ -1,7 +1,7 @@
 
 import uuid
 from sqlalchemy import (
-    Column, String, Boolean, Integer, Text, Date, Time,
+    Column, String, Boolean, Integer, Float, Text, Date, Time,
     ForeignKey, Enum, DateTime, func
 )
 from sqlalchemy.dialects.postgresql import UUID
@@ -36,10 +36,27 @@ class User(Base):
     phone      = Column(String, nullable=True)
     address    = Column(String, nullable=True)
     role       = Column(Enum(RoleEnum), default=RoleEnum.customer, nullable=False)
+
+    # Extended profile — collected via the "Complete Profile" flow right
+    # after first login. Mainly needed for Google/Facebook sign-ups, which
+    # skip the sign-up form entirely (and so skip phone too, hence it's
+    # included here even though it's an older field).
+    age          = Column(Integer, nullable=True)
+    weight_kg    = Column(Float, nullable=True)
+    height_cm    = Column(Float, nullable=True)
+    fitness_goal = Column(String, nullable=True)
+
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
 
     bookings   = relationship("Booking", back_populates="customer", cascade="all, delete-orphan")
+
+    @property
+    def profile_complete(self):
+        """Single source of truth for whether onboarding is done — read by
+        the frontend on every page load to decide whether to redirect to
+        /complete-profile."""
+        return all([self.phone, self.age, self.weight_kg, self.height_cm, self.fitness_goal])
 
 
 class Coach(Base):

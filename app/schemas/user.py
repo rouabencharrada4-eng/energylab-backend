@@ -18,16 +18,25 @@ class UserCreate(UserBase):
     role:     RoleEnum = RoleEnum.customer
 
 class UserUpdate(BaseModel):
-    full_name: Optional[str] = None
-    phone:     Optional[str] = None
-    address:   Optional[str] = None
+    full_name:    Optional[str] = None
+    phone:        Optional[str] = None
+    address:      Optional[str] = None
+    age:          Optional[int] = None
+    weight_kg:    Optional[float] = None
+    height_cm:    Optional[float] = None
+    fitness_goal: Optional[str] = None
 
 class UserOut(UserBase):
-    id:         str
-    clerk_id:   str
-    role:       RoleEnum
-    created_at: datetime
-    updated_at: datetime
+    id:               str
+    clerk_id:         str
+    role:             RoleEnum
+    age:              Optional[int] = None
+    weight_kg:        Optional[float] = None
+    height_cm:        Optional[float] = None
+    fitness_goal:     Optional[str] = None
+    profile_complete: bool
+    created_at:       datetime
+    updated_at:       datetime
 
     class Config:
         from_attributes = True
