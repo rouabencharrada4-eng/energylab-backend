@@ -7,7 +7,7 @@ from app.core.config import settings
 from app.db.database import Base, engine
 from app.api.routes import (
     webhooks, users, coaches, services, time_slots, bookings, announcements,
-    site_content, gallery, showcase, events, hero_images,
+    site_content, gallery, showcase, events, hero_images, analytics,
 )
 import os
 import traceback
@@ -75,6 +75,8 @@ app.include_router(gallery.router,       prefix="")
 app.include_router(showcase.router,      prefix="")
 app.include_router(events.router,        prefix="")
 app.include_router(hero_images.router,   prefix="")
+app.include_router(hero_images.router,   prefix="")
+app.include_router(analytics.router,     prefix="")
 
 @app.get("/health")
 def health():
