@@ -56,7 +56,7 @@ class User(Base):
         """Single source of truth for whether onboarding is done — read by
         the frontend on every page load to decide whether to redirect to
         /complete-profile."""
-        return all([self.phone, self.age, self.weight_kg, self.height_cm, self.fitness_goal])
+        return all([self.phone, self.address, self.age, self.weight_kg, self.height_cm, self.fitness_goal])
 
 
 class Coach(Base):
